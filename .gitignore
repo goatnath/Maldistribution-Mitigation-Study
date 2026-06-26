@@ -1,0 +1,48 @@
+# ── Large field data (time step directories) ─────────────────────────────────
+# Exclude all numbered time-step directories (e.g. 0.5/, 1/, 10.00021/)
+# Keep only t=0 (initial conditions)
+laminar_sheet_chevron/[1-9]*/
+laminar_sheet_chevron/0.[1-9]*/
+laminar_sheet_chevron/*.zip
+
+laminar_sheet_teardrop/[1-9]*/
+laminar_sheet_teardrop/0.[1-9]*/
+laminar_sheet_teardrop/*.zip
+
+# ── Mesh cell/point level files in t=0 (large, regenerable) ──────────────────
+**/0/cellLevel
+**/0/pointLevel
+
+# ── polyMesh binary files (regenerable via blockMesh + snappyHexMesh) ─────────
+# Keep: boundary (defines patch names/types — needed for reproducibility)
+**/polyMesh/faces
+**/polyMesh/owner
+**/polyMesh/neighbour
+**/polyMesh/points
+**/polyMesh/cellLevel
+**/polyMesh/pointLevel
+**/polyMesh/level0Edge
+**/polyMesh/surfaceIndex
+
+# ── STL geometry files (regenerable from .scad via OpenSCAD) ─────────────────
+**/geometry/*.stl
+
+# ── postProcessing output (regenerable) ──────────────────────────────────────
+**/postProcessing/
+
+# ── OpenFOAM processor directories ───────────────────────────────────────────
+processor*/
+
+# ── Foam log files ────────────────────────────────────────────────────────────
+log.*
+*.log
+
+# ── ParaView / VTK export ────────────────────────────────────────────────────
+*.vtk
+*.vtu
+*.vtp
+VTK/
+
+# ── OS junk ──────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
