@@ -19,10 +19,10 @@ Flow maldistribution (non-uniform velocity across a cross-section) reduces the e
 | `laminar_sheet_teardrop` | Biconvex teardrop | Streamlined lens shape (intersection of 2 circles r=145 mm), 10 mm tall |
 
 Both cases share identical flow conditions:
-- **Channel**: 200 mm × 1000 mm, height 97 mm
+- **Channel**: 200 mm wide × 1200 mm long computational domain, height 97 mm
 - **Fluid**: Air, ν = 1.563 × 10⁻⁵ m²/s
 - **Inlet**: Uniform U = 0.5 m/s
-- **Re ≈ 3.2** (deeply laminar)
+- **Re ≈ 3,103** based on the 97 mm channel height: Re = U H / ν. The calculation uses a laminar model; this Reynolds number alone does not establish that the physical flow is laminar.
 - **Mesh**: ~142,000 cells (snappyHexMesh, surface refinement level 2)
 - **End time**: 10 s
 
@@ -39,7 +39,15 @@ Both cases share identical flow conditions:
 | Max vertical mixing (Uz) | 0.092 m/s | **0.137 m/s** | Teardrop +50% |
 | Pressure drop | 0.122 Pa | **0.113 Pa** | Teardrop −7.4% |
 
-**→ Teardrop wins 6–1.** The streamlined biconvex shape avoids the blunt-body separation wake that the sharp chevron creates, resulting in better lateral redistribution, less stagnation, and lower pressure penalty.
+These are preliminary single-mesh, laminar-model results. The uniformity-index difference is only 0.0006; its significance and the ranking of the geometries are unknown until mesh and time-step sensitivity have been assessed. Velocity maxima do not by themselves establish mixing, and the pressure figures in the table are field extrema rather than inlet-to-outlet pressure drops.
+
+---
+
+## Mesh independence: not yet established
+
+Only one mesh per geometry is reported. For each geometry, run at least three systematically refined meshes, keeping geometry, boundary conditions, physical model, sampling locations and solver tolerances consistent. Record cell count, mesh-quality checks, residuals and mass imbalance; compare the same volume- or area-weighted uniformity metric, stagnation measure, and inlet-to-outlet pressure drop at a matched converged time. Refine both the background mesh and the insert/wall resolution, and check time-step sensitivity separately. Report successive changes and, where appropriate, an uncertainty estimate such as GCI. Repeat the comparison with a suitable transitional or turbulent model and validation data before drawing conclusions about physical flow.
+
+No additional meshes have been run or verified for this update. A small change between two results alone does not prove convergence, especially for the 0.0006 difference in γ.
 
 ---
 
@@ -91,3 +99,4 @@ The insert geometries are defined in OpenSCAD:
 
 ## Author
 goatnath — 2026
+

@@ -11,13 +11,19 @@
 | Solver | `foamRun` — `incompressibleFluid` |
 | Turbulence model | Laminar (`simulationType laminar`) |
 | Fluid | Air (kinematic viscosity ν = 1.563 × 10⁻⁵ m²/s) |
-| Domain | 200 mm × 1000 mm channel, height 97 mm above sheet (Z: 3→100 mm) |
+| Domain | 200 mm × 1200 mm computational channel, height 97 mm above sheet (Z: 3→100 mm) |
 | Inlet | Uniform U = 0.5 m/s, −Y direction (top-to-bottom) |
 | Outlet | Zero-gradient U, fixed p = 0 |
 | Walls | `noSlip` — bottom, top, sides, insert surface |
 | Mesh | `snappyHexMesh` on hex background (20×120×22 base), surface refinement level 2 |
 | End time | 10 s (chevron: t=10.00021, teardrop: t=9.9995) |
-| Reynolds number | Re = U·L/ν = 0.5 × 0.1 / 1.563e-5 ≈ **3.2** (deeply laminar) |
+| Reynolds number | Re = U·L/ν = 0.5 × 0.097 / 1.563e-5 ≈ **3,103** (channel height as characteristic length; laminar model assumed, not validated) |
+
+---
+
+## Mesh and model limitations
+
+The reported meshes are a single resolution per geometry; mesh independence and time-step independence have not been established. The γ difference of 0.0006 may be smaller than numerical uncertainty. Run at least three systematically refined meshes for each case and compare consistent weighted metrics, pressure drop, mesh quality, residuals and mass balance; see the README. Validate the laminar assumption and wake interpretations before making design recommendations. The pressure-extrema metric is not the same as inlet-to-outlet pressure drop.
 
 ---
 
@@ -81,7 +87,7 @@
 | **Δp total (hydraulic penalty)** | p_max − p_min × ρ | 0.1218 Pa | **0.1127 Pa** | Teardrop ▼ |
 | **Uy std** | σ(Uy) | 0.2255 m/s | **0.2248 m/s** | Teardrop ▼ |
 
-**Scorecard: Teardrop wins 6–1 over Chevron** (on all tracked metrics)
+These single-mesh results do not establish a winner. The γ difference is 0.0006, and numerical uncertainty has not been quantified. The extrema-based Δp metric differs from the inlet-to-outlet pressure drop reported above.
 
 ---
 
@@ -104,7 +110,7 @@ The **peak near 0–0.054 m/s** reflects:
 - Insert wake recirculation (chevron creates a stronger, longer wake; teardrop wake is shorter/narrower)
 
 > [!IMPORTANT]
-> The **stagnation fraction** (chevron: 7.55% vs teardrop: 5.39%) is the most important maldistribution indicator here. Larger stagnation zones mean dead regions where flow doesn't participate in heat/mass transfer.
+> The reported stagnation fractions (7.55% and 5.39%) are cell-count-based indicators, not direct measurements of heat or mass transfer. Their sensitivity to mesh and threshold should be checked.
 
 ---
 
@@ -127,7 +133,7 @@ The **peak near 0–0.054 m/s** reflects:
 - The smooth curvature allows the flow to **reattach sooner** after the insert, reducing dead zones
 
 ### Why Teardrop Outperforms Chevron
-The teardrop's aerodynamic shape avoids the **blunt-body separation** that the chevron's triangular trailing edge creates. In laminar flow (Re ≈ 3), viscous forces dominate and sharp corners produce persistent recirculation bubbles. The teardrop's smooth contours:
+The teardrop's aerodynamic shape avoids the **blunt-body separation** that the chevron's triangular trailing edge creates. The simulations assume laminar flow; the Reynolds number based on channel height is approximately 3,103. The physical regime and these proposed wake mechanisms require validation. The teardrop's smooth contours:
 1. Maintain attached flow longer → less wake
 2. Generate more lateral velocity (better redistribution across width)
 3. Push more flow vertically (better cross-gap mixing)
@@ -147,16 +153,16 @@ p_std [m²/s²]       0.0204              0.0192
 ```
 
 > [!NOTE]
-> The chevron shows a **negative pressure zone** (p_min = −0.007 m²/s²) indicating a strong suction region in the separated wake behind the triangular trailing corners. The teardrop has no negative pressure — flow stays attached.
+> The chevron has a negative minimum gauge pressure (p_min = −0.007 m²/s²). Pressure extrema alone do not establish whether either flow is attached or separated.
 
-The lower `p_std` for teardrop (0.0192 vs 0.0204) confirms a more **spatially uniform pressure field** — another indicator of reduced maldistribution.
+The reported `p_std` is lower for teardrop (0.0192 vs 0.0204); this alone does not establish reduced flow maldistribution.
 
 ---
 
 ## 8. Conclusions & Recommendations
 
 > [!TIP]
-> **The teardrop insert is the superior geometry for flow maldistribution mitigation in this laminar sheet configuration.**
+> **The teardrop has favorable values for several metrics in this single-mesh laminar-model comparison; a preferred geometry cannot yet be established.**
 
 | Criterion | Chevron | Teardrop | Assessment |
 |---|---|---|---|
@@ -167,9 +173,9 @@ The lower `p_std` for teardrop (0.0192 vs 0.0204) confirms a more **spatially un
 | Pressure penalty | 0.122 Pa | **0.113 Pa** | −7.4% (teardrop) |
 
 ### Design Recommendations
-1. **Prefer teardrop over chevron** at these low Reynolds numbers — laminar flow doesn't benefit from the sharp wake effects that turbulent chevrons leverage
+1. **Treat the geometry ranking as preliminary** until mesh, time-step, model and experimental validation are available
 2. **Stagger multiple inserts** along the channel length to progressively homogenize the velocity profile
-3. **Consider increasing protrusion height** from 10 mm — at Re ≈ 3, the 10 mm insert barely perturbates the boundary layer across the 97 mm channel height
+3. **Consider increasing protrusion height** from 10 mm — assess its effect on the velocity field and wall resolution
 4. **Explore periodic arrays** of teardrop inserts to generate cumulative lateral redistribution
 5. The **near-wall stagnation zones** (25% of cells near Uy ≈ 0) are dominated by boundary layers on bottom/top/side walls, not just the insert wake — wall modifications (ribs, dimples) may address these more directly
 
@@ -177,8 +183,9 @@ The lower `p_std` for teardrop (0.0192 vs 0.0204) confirms a more **spatially un
 - Run with **T field active** (thermal BCs on insert surface) to assess heat transfer improvement
 - Sweep protrusion heights: 5, 10, 15, 20 mm
 - Compare multiple inserts in series
-- Extend to turbulent regime (Re > 4000) where chevron's vortex generation may become competitive
+- Assess transition and turbulence-model sensitivity at the stated Reynolds number; compare against suitable validation data
 
 ---
 
 *Generated by Antigravity CFD postprocessing | OpenFOAM 12 | 2026-06-26*
+
